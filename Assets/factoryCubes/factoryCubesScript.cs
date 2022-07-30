@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using System;
 using KModkit;
@@ -309,4 +310,40 @@ public class factoryCubesScript : MonoBehaviour {
         }
     }
     
+	//twitch plays
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"To press the buttons on the module, use !{0} press [0-9] (The numbers can be chained. Example: !{0} press 69420)";
+    #pragma warning restore 414
+    
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+		string[] parameters = command.Split(' ');
+		if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+		{
+			yield return null;
+			if (parameters.Length != 2)
+			{
+				yield return "sendtochaterror Parameter length invalid. Command ignored.";
+				yield break;
+			}
+			
+			if (parameters[1].Length == 0)
+			{
+				yield return "sendtochaterror Number length invalid. Command ignored.";
+				yield break;
+			}
+			
+			for (int x = 0; x < parameters[1].Length; x++)
+			{
+				int Out;
+				if (!int.TryParse(parameters[1][x].ToString(), out Out))
+				{
+					yield return "sendtochaterror A number given is not valid. Command ignored.";
+					yield break;
+				}
+				Tools[Out].OnInteract();
+				yield return new WaitForSecondsRealtime(0.1f);
+			}
+		}
+	}
 }
