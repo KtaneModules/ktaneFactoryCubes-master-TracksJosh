@@ -7,6 +7,7 @@ using KModkit;
 using System.Linq;
 using KeepCoding;
 using System.Text;
+using Rnd = UnityEngine.Random;
 
 public class factoryCubesScript : MonoBehaviour {
 
@@ -24,22 +25,26 @@ public class factoryCubesScript : MonoBehaviour {
     public KMSelectable[] Tools;
     public Material White;
     public Material[] Colors;
+    public Renderer[] ToolRender;
     public Renderer[] CubeSides;
+    public Renderer[] DisplayCubeSides;
     public GameObject Cube;
 
-    private string[] UsableItems = new string[] { "", "", "", "", "", "", "", "", "", ""};
+    private string[] UsableItems = new string[] { "", "", "", "", "", "", "", "", "", "" };
     private Material[] cool = new Material[] { null, null, null, null, null, null, null, null, null, null };
-    private string[] CubeTools = new string[] {"top", "left", "right"};
+    private string[] CubeTools = new string[] { "top", "left", "right" };
 
-    private bool isSolved, struck, sandbox = false;
+    private bool isSolved, struck = false;
+    private bool sandbox = false;
     private static bool playSound = false;
     private static int moduleIdCounter = 1;
     private int moduleId, batteries, ports, indicators, cubePresses, last;
     private long serialNumber;
     private string serial;
     private string order;
-    private int ordered = 0;
+    private int ordered, stages = 0;
     private bool coverTop, coverLeft, coverRight = false;
+    private bool displayTop, displayLeft, displayRight = false;
 
 
     // Use this for initialization
@@ -62,7 +67,7 @@ public class factoryCubesScript : MonoBehaviour {
             audio.PlaySoundAtTransform("theme", transform);
         }
     }
-    void Start () {
+    void Start() {
         playSound = false;
         InitializeModule();
     }
@@ -84,6 +89,7 @@ public class factoryCubesScript : MonoBehaviour {
         serialNumber = Int64.Parse(Convert.ToString(serialNumber, 8));
         Debug.LogFormat("[Factory Cubes #{0}] Serial after number conversion: {1}", moduleId, serialNumber.ToString());
         FindTools();
+        DisplayTheCube();
     }
 
     private string alphaToInt(string s)
@@ -98,7 +104,7 @@ public class factoryCubesScript : MonoBehaviour {
 
     private string intToMonth(string s)
     {
-        string s2 = s.Replace("10", "OCTOBER").Replace("11", "NOVEMBER").Replace("12", "DECEMBER").Replace("1","JANUARY")
+        string s2 = s.Replace("10", "OCTOBER").Replace("11", "NOVEMBER").Replace("12", "DECEMBER").Replace("1", "JANUARY")
             .Replace("2", "FEBRUARY").Replace("3", "MARCH").Replace("4", "APRIL").Replace("5", "MAY").Replace("6", "JUNE")
             .Replace("7", "JULY").Replace("8", "AUGUST").Replace("9", "SEPTEMBER");
 
@@ -122,13 +128,13 @@ public class factoryCubesScript : MonoBehaviour {
         {
             if (Int64.Parse(month[i].ToString()) < 10)
             {
-                if(UsableItems[Int64.Parse(month[i].ToString()) % 10] == "")
+                if (UsableItems[Int64.Parse(month[i].ToString()) % 10] == "")
                 {
                     UsableItems[Int64.Parse(month[i].ToString()) % 10] = CubeTools[choice];
                     choice++;
                 }
             }
-            if(choice >= 3)
+            if (choice >= 3)
             {
                 break;
             }
@@ -147,9 +153,37 @@ public class factoryCubesScript : MonoBehaviour {
         {
             Debug.LogFormat("[Factory Cubes #{0}] {1}th tool is {2}", moduleId, i, UsableItems[i]);
         }
+        for (int i = 0; i < UsableItems.Length; i++)
+        {
+            for (int j = 0; j < Colors.Length; j++)
+            {
+                if (UsableItems[i] == Colors[j].name)
+                {
+                    ToolRender[i].material = Colors[j];
+                }
+            }
+        }
+    }
+
+    void DisplayTheCube()
+    {
+        string[] GenerateCube = UsableItems;
+        GenerateCube.Remove(UsableItems.IndexOf("top"));
+        GenerateCube.Remove(UsableItems.IndexOf("left"));
+        GenerateCube.Remove(UsableItems.IndexOf("right"));
+        for (int i = 0; i < 4; i++)
+        {
+            int y = Rnd.Range(0, UsableItems.Length);
+            while(UsableItems[y] == "top"|| UsableItems[y] == "left"|| UsableItems[y] == "right")
+            {
+                y = (y + 1) % UsableItems.Length;
+            }
+            DisplayCubeSides[i].material = cool[y];
+        }
+        
     }
     // Update is called once per frame
-    void Update () {
+    void Update() {
         if (coverTop)
         {
             CoverTop.SetActive(true);
@@ -174,15 +208,11 @@ public class factoryCubesScript : MonoBehaviour {
         {
             CoverRight.SetActive(false);
         }
+
     }
 
     void Button(int pressedKey)
     {
-        if (!isSolved)
-        {
-            OrderInTheCourt(pressedKey);
-            Debug.LogFormat("{0}", pressedKey);
-        }
         if (UsableItems[pressedKey] == "top")
         {
             audio.PlaySoundAtTransform("otherSound", transform);
@@ -282,12 +312,48 @@ public class factoryCubesScript : MonoBehaviour {
             coverRight = false;
             struck = false;
         }
+        if (!isSolved)
+        {
+            FunnyMoment();
+            Debug.LogFormat("{0}", pressedKey);
+        }
     }
 
+    void FunnyMoment()
+    {
+
+        if (CubeSides[0].material.name == DisplayCubeSides[0].material.name && CubeSides[1].material.name == DisplayCubeSides[1].material.name && CubeSides[2].material.name == DisplayCubeSides[2].material.name && CubeSides[3].material.name == DisplayCubeSides[3].material.name && !coverTop && !coverLeft && !coverRight && !isSolved)
+        {
+            if(stages == 2)
+            {
+                bombModule.HandlePass();
+                isSolved = true;
+                audio.PlaySoundAtTransform("solve", transform);
+            }
+            else
+            {
+                stages++;
+                for (int i = 0; i < 4; i++)
+                {
+                    CubeSides[i].material = White;
+                    DisplayCubeSides[i].material = White;
+                }
+                DisplayTheCube();
+                coverTop = false;
+                coverLeft = false;
+                coverRight = false;
+                audio.PlaySoundAtTransform("stage", transform);
+            }
+        }
+
+    }
+
+    /*
     void OrderInTheCourt(int pressedKey)
     {
         if (!isSolved)
         {
+            
             if (order[ordered].ToString() == pressedKey.ToString())
             {
                 ordered++;
@@ -309,6 +375,7 @@ public class factoryCubesScript : MonoBehaviour {
             }
         }
     }
+    */
     
 	//twitch plays
     #pragma warning disable 414
