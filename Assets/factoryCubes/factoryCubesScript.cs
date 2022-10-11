@@ -74,20 +74,20 @@ public class factoryCubesScript : MonoBehaviour {
     void InitializeModule()
     {
         moduleId = moduleIdCounter++;
-        batteries = bomb.GetBatteryCount();
-        ports = bomb.GetPortCount();
-        indicators = bomb.GetIndicators().Count();
-        last = bomb.GetSerialNumber()[5];
+        //batteries = bomb.GetBatteryCount();
+        //ports = bomb.GetPortCount();
+        //indicators = bomb.GetIndicators().Count();
+        //last = bomb.GetSerialNumber()[5];
 
-        serial = bomb.GetSerialNumber();
-        string newserial;
-        newserial = alphaToInt(serial);
+        //serial = bomb.GetSerialNumber();
+        //string newserial;
+        //newserial = alphaToInt(serial);
 
-        serialNumber = Int64.Parse(newserial);
-        serialNumber = Int64.Parse(Convert.ToString(serialNumber, 8));
-        serialNumber += batteries + ports + indicators;
-        serialNumber = Int64.Parse(Convert.ToString(serialNumber, 8));
-        Debug.LogFormat("[Factory Cubes #{0}] Serial after number conversion: {1}", moduleId, serialNumber.ToString());
+        //serialNumber = Int64.Parse(newserial);
+        //serialNumber = Int64.Parse(Convert.ToString(serialNumber, 8));
+        //serialNumber += batteries + ports + indicators;
+        //serialNumber = Int64.Parse(Convert.ToString(serialNumber, 8));
+        //Debug.LogFormat("[Factory Cubes #{0}] Serial after number conversion: {1}", moduleId, serialNumber.ToString());
         FindTools();
         DisplayTheCube();
     }
@@ -118,11 +118,11 @@ public class factoryCubesScript : MonoBehaviour {
     void FindTools()
     {
         string month = alphaToInt(intToMonth(DateTime.Today.Month.ToString()));
-        Debug.LogFormat("[Factory Cubes #{0}] This Month: {1}", moduleId, intToMonth(DateTime.Today.Month.ToString()));
-        Debug.LogFormat("[Factory Cubes #{0}] Month Conversion: {1}", moduleId, month);
+        //Debug.LogFormat("[Factory Cubes #{0}] This Month: {1}", moduleId, intToMonth(DateTime.Today.Month.ToString()));
+        //Debug.LogFormat("[Factory Cubes #{0}] Month Conversion: {1}", moduleId, month);
         long temp = Int64.Parse(month);
         serialNumber += temp;
-        Debug.LogFormat("[Factory Cubes #{0}] Serial after adding month: {1}", moduleId, serialNumber.ToString());
+        //Debug.LogFormat("[Factory Cubes #{0}] Serial after adding month: {1}", moduleId, serialNumber.ToString());
         int choice = 0;
         for (int i = 0; i < month.Length; i++)
         {
@@ -147,8 +147,8 @@ public class factoryCubesScript : MonoBehaviour {
                 cool[i] = Colors[(last + i) % 16];
             }
         }
-        order = serialNumber.ToString();
-        Debug.LogFormat("[Factory Cubes #{0}] Submission String: {1}", moduleId, order);
+        //order = serialNumber.ToString();
+        //Debug.LogFormat("[Factory Cubes #{0}] Submission String: {1}", moduleId, order);
         for (int i = 0; i < UsableItems.Length; i++)
         {
             Debug.LogFormat("[Factory Cubes #{0}] {1}th tool is {2}", moduleId, i, UsableItems[i]);
@@ -180,7 +180,8 @@ public class factoryCubesScript : MonoBehaviour {
             }
             DisplayCubeSides[i].material = cool[y];
         }
-        
+        Debug.LogFormat("[Factory Cubes #{0}] Stage {1}: top-left: {2}, top-right: {3}, bottom-left: {4}, bottom-right: {5}", moduleId, stages+1, DisplayCubeSides[0].material.name.Replace(" (Instance)", ""), DisplayCubeSides[1].material.name.Replace(" (Instance)", ""), DisplayCubeSides[2].material.name.Replace(" (Instance)", ""), DisplayCubeSides[3].material.name.Replace(" (Instance)", ""));
+
     }
     // Update is called once per frame
     void Update() {
@@ -315,7 +316,6 @@ public class factoryCubesScript : MonoBehaviour {
         if (!isSolved)
         {
             FunnyMoment();
-            Debug.LogFormat("{0}", pressedKey);
         }
     }
 
