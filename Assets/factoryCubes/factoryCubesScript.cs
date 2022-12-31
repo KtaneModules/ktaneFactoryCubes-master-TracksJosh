@@ -379,7 +379,7 @@ public class factoryCubesScript : MonoBehaviour {
     
 	//twitch plays
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"To press the buttons on the module, use !{0} press [0-9] (The numbers can be chained. Example: !{0} press 69420)";
+    private readonly string TwitchHelpMessage = @"To press the buttons on the module, use !{0} press [0-9] (The numbers can be chained. Example: !{0} press 69420). 0 is the top-left button, 9 is the button above the bottom-right button. The order of the buttons are in anti/counter clockwise.";
     #pragma warning restore 414
     
     IEnumerator ProcessTwitchCommand(string command)
