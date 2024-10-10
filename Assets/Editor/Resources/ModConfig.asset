@@ -16,6 +16,6 @@ MonoBehaviour:
   author: TracksJosh
   description: "Flash died, so I took over and did it myself.\r\n\r\nBased on Bart
     Bonte game \"Factory Balls\""
-  version: 2.002
+  version: 2.01
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 5b4e80e962dc08a4ba41cac828b6ba21, type: 3}

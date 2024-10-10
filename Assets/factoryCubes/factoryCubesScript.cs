@@ -45,7 +45,7 @@ public class factoryCubesScript : MonoBehaviour {
     private int ordered, stages = 0;
     private bool coverTop, coverLeft, coverRight = false;
     private bool displayTop, displayLeft, displayRight = false;
-
+    private KMAudio.KMAudioRef audioReference;
 
     // Use this for initialization
 
@@ -113,7 +113,12 @@ public class factoryCubesScript : MonoBehaviour {
     private void OnDestroy()
     {
         playSound = false;
+        if(audioReference != null)
+        {
+            audioReference.StopSound();
+        }
     }
+
 
     void FindTools()
     {
@@ -214,6 +219,11 @@ public class factoryCubesScript : MonoBehaviour {
 
     void Button(int pressedKey)
     {
+        if (audioReference != null && playSound)
+        {
+            playSound = false;
+            audioReference.StopSound();
+        }
         if (UsableItems[pressedKey] == "top")
         {
             audio.PlaySoundAtTransform("otherSound", transform);
